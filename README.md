@@ -1,46 +1,35 @@
-📘 BeyondChats AI Response Evaluator
+BeyondChats AI Response Evaluator
 
-A lightweight but complete evaluation engine built for the BeyondChats AI Evaluation Intern Task.
-This project scores chatbot outputs based on:
+This project implements an AI response evaluation engine for the BeyondChats Internship Task.
+It analyzes chatbot responses using semantic similarity to compute the following metrics:
 
-Relevance → How closely the AI’s answer matches the user’s query
+Relevance
 
-Completeness → How well the answer aligns with available context
+Completeness
 
-Hallucination → Whether the model invents information not found in context
+Hallucination
 
-Latency → Total evaluation time
+Latency
 
-Cost Estimate → Approximate (mock) inference cost
+Cost Estimate
 
-The evaluator uses semantic similarity (Sentence Transformers) to generate real-time scoring.
+The evaluator loads a chat transcript and backend context vectors and scores the latest AI response.
 
-🚀 Features
-✅ Relevance Scoring
+Features
 
-Measures semantic similarity between the latest user query and the AI response.
+Extracts latest user query from conversation_turns
 
-✅ Completeness Scoring
+Extracts final_response from BeyondChats formatted context
 
-Checks how much of the AI response is grounded in the provided context chunks.
+Computes semantic similarity scores
 
-✅ Hallucination Detection
+Detects hallucinations by comparing response against context
 
-Detects mismatches or fabricated information by measuring similarity against context.
+Measures evaluation latency
 
-✅ Latency Measurement
+Works fully offline using sentence-transformers
 
-Computes total evaluation time in milliseconds.
-
-✅ Plug-and-Play JSON Loader
-
-Accepts:
-
-chat.json
-
-context.json (BeyondChats format)
-
-📁 Project Structure
+Project Structure
 beyondchats-ai-evaluator/
 │
 ├── evaluate.py
@@ -56,9 +45,9 @@ beyondchats-ai-evaluator/
     ├── similarity.py
     └── scoring.py
 
-🔧 Installation
+Installation
 
-Clone the repo:
+Clone the repository:
 
 git clone https://github.com/<your-username>/beyondchats-ai-evaluator
 cd beyondchats-ai-evaluator
@@ -68,9 +57,9 @@ Install dependencies:
 
 pip install -r requirements.txt
 
-📌 Usage
+Usage
 
-Run the evaluator with:
+Run evaluation:
 
 python evaluate.py --chat data/chat.json --context data/context.json
 
@@ -84,80 +73,40 @@ hallucination: 0.51
 latency_ms: 687.456
 cost_estimate_usd: 0.00001
 
-🧠 How the Evaluation Works
-1️⃣ Extract User Query
+How Evaluation Works
 
-Pulls the latest user message from:
+The evaluator extracts the latest user message from chat.json.
 
-"conversation_turns"
+It extracts the AI final_response list from context.json and merges it.
 
-2️⃣ Extract AI Response
+It collects context chunk texts from vector_data.
 
-BeyondChats returns:
+It computes:
 
-final_response: [ "sentence1", "sentence2" ]
+Relevance: similarity(user_query, ai_response)
 
+Completeness: similarity(ai_response, full_context)
 
-Evaluator merges it into one string.
+Hallucination: 1 - similarity(ai_response, full_context)
 
-3️⃣ Load Context Chunks
+Latency is measured using a simple timestamp difference.
 
-Extracts all "text" fields from vector_data.
+The scoring uses the sentence-transformer model:
+all-MiniLM-L6-v2.
 
-Missing texts are safely skipped to avoid errors.
+Requirements
+sentence-transformers
+torch
+numpy
 
-4️⃣ Compute Semantic Scores
+Notes
 
-Uses all-MiniLM-L6-v2:
+Missing text fields in context vectors are safely skipped.
 
-Cosine similarity for relevance
+Cost estimate is a placeholder value.
 
-Cosine similarity vs context for completeness
+The evaluator is modular and can be extended with other scoring strategies.
 
-1 - similarity for hallucination
-
-5️⃣ Output JSON-like metrics
-
-Human-readable + easily parseable.
-
-📊 Why This Approach?
-
-Fast execution (<1 second)
-
-Cheap (local inference)
-
-No external API dependency
-
-Deterministic results
-
-Clean code for easy extension
-
-🧪 Example: Detecting a Hallucination
-
-If the model claims:
-
-"We offer subsidized rooms inside the clinic."
-
-…but this does not exist in the context vectors, the hallucination score rises (0.5+).
-This is exactly what your sample evaluation output showed.
-
-👨‍💻 Intern Task Requirements — Covered
-Requirement	Status
-Load chat + context JSON	✅
-Extract user query	✅
-Extract AI response	✅
-Parse vector context	✅
-Compute relevance	✅
-Compute completeness	✅
-Detect hallucinations	✅
-Measure latency	✅
-Produce final clean score object	✅
-Easy to run	✅
-Clean code	✅
-
-📬 Author
-
-Built by --Najad
-As part of the BeyondChats Intern Task.
-
-⭐ If you found this helpful, star the repository!
+Author
+Najad
+BeyondChats Evaluation Intern Task Submission
