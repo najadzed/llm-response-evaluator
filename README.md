@@ -47,11 +47,8 @@ beyondchats-ai-evaluator/
 
 Installation
 
-Clone the repository:
-
 git clone https://github.com/<your-username>/beyondchats-ai-evaluator
 cd beyondchats-ai-evaluator
-
 
 Install dependencies:
 
@@ -60,9 +57,7 @@ pip install -r requirements.txt
 Usage
 
 Run evaluation:
-
 python evaluate.py --chat data/chat.json --context data/context.json
-
 
 Example output:
 
@@ -73,26 +68,28 @@ hallucination: 0.51
 latency_ms: 687.456
 cost_estimate_usd: 0.00001
 
+
 How Evaluation Works
 
-The evaluator extracts the latest user message from chat.json.
+Extract the most recent user message from chat.json.
 
-It extracts the AI final_response list from context.json and merges it.
+Merge the AI final_response list from context.json.
 
-It collects context chunk texts from vector_data.
+Gather all context chunk texts from vector_data.
 
-It computes:
+Compute:
 
 Relevance: similarity(user_query, ai_response)
 
-Completeness: similarity(ai_response, full_context)
+Completeness: similarity(ai_response, context)
 
-Hallucination: 1 - similarity(ai_response, full_context)
+Hallucination: 1 - similarity(ai_response, context)
 
-Latency is measured using a simple timestamp difference.
+Measure latency using timestamps.
 
-The scoring uses the sentence-transformer model:
-all-MiniLM-L6-v2.
+The scoring model used is:
+
+all-MiniLM-L6-v2
 
 Requirements
 sentence-transformers
@@ -101,12 +98,13 @@ numpy
 
 Notes
 
-Missing text fields in context vectors are safely skipped.
+Missing text fields in context vectors are skipped safely.
 
 Cost estimate is a placeholder value.
 
-The evaluator is modular and can be extended with other scoring strategies.
+The evaluator is modular and extendable.
 
 Author
+
 Najad
 BeyondChats Evaluation Intern Task Submission
